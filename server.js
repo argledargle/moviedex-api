@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
-const POKEDEX = require("./pokedex.json"); //replace with Moviedex
+const MOVIES = require("./movies.json");
 const cors = require("cors");
 const helmet = require("helmet");
 
@@ -11,9 +11,12 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors());
 
-app.use(function validateBearerToken(rq, res, next) {
+app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN; 
-  const authToken = console.log("Validate bearer token middleware");
+  const authToken = req.headers.authorization;
+  
+  console.log("Validate bearer token middleware");
+  debugger
 
   if (!authToken || authToken.split(" ")[1] !== apiToken) {
     return res.status(401).json({ error: "Unauthorized request" });
@@ -26,7 +29,7 @@ app.get("/movie", function handleGetMovie(req, res) {
   let response = MOVIES;
 
   if (req.query.genre) {
-    response = repsonse.filter(movie =>
+    response = response.filter(movie =>
       movie.genre.toLowerCase().includes(req.query.genre.toLowerCase())
     );
   }
